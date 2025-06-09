@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>3D model in AR</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <style>
+    body { text-align: center; font-family: sans-serif; margin-top: 50px; }
+    button {
+      font-size: 18px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      background-color: #333;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<h1>3D model in AR</h1>
+
+<model-viewer id="viewer"
+              alt="Gray Marble Tile"
+              ar
+              ar-modes="webxr scene-viewer fallback"
+              ar-placement="floor"
+              camera-controls
+              auto-rotate
+              environment-image="neutral"
+              exposure="1.0">
+</model-viewer>
+
+<button id="ar-button">📱 View in AR</button>
+
+<script>
+  const viewer = document.getElementById('viewer');
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+  const isAndroid = /android/i.test(userAgent);
+  const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+
+  // ✅ Dynamically load correct model for platform
+  if (isIOS) {
+    viewer.setAttribute("ios-src", "Kitchen.usdz");
+    viewer.setAttribute("src", "Kitchen.glb"); // fallback
+  } else if (isAndroid) {
+    viewer.setAttribute("src", "Kitchen.glb");
+  }
+
+  // ✅ Ensure AR is triggered on click
+  document.getElementById('ar-button').onclick = () => {
+    if (viewer && typeof viewer.activateAR === 'function') {
+      viewer.activateAR();
+    } else {
+      alert("AR not supported or model not loaded.");
+    }
+  };
+</script>
+</body>
+</html>
